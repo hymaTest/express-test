@@ -7,20 +7,20 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-var app = express();
+var app = express(); // 初始化app
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'jade');
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(logger('dev')); // 日志
+app.use(express.json()); // 处理post请求中的 req.body
+app.use(express.urlencoded({ extended: false })); // 处理post请求中的 req.body
+app.use(cookieParser()); // 处理cookie为 {key: value} 格式
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/', indexRouter); // 注册路由
+app.use('/users', usersRouter); // 注册路由
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

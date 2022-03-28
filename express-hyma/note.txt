@@ -1,0 +1,9 @@
+文件目录
+
+bin
+public 静态文件目录 
+  images
+  javascripts
+  stylesheets
+routes 路由
+views html模版
