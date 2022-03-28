@@ -7,3 +7,127 @@ public 静态文件目录
   stylesheets
 routes 路由
 views html模版
+
+
+next ====>
+nginx 配置 redis 
+nginx 配置 mysql 
+
+
+原理: 
+app.use 用来注册中间件, 先收集起来
+遇到http请求, 根据path 和 method 判断触发哪些 
+next: 上一个next触发下一个 
+
+class LikeExpress {
+
+  constructor() {
+    this.routes = {
+      'all': [], // app.use
+      'get': [], // app.get
+      'post': [] // app.post
+    }
+  }
+
+  register(path) {
+    const info = {};
+    if (typeof path === 'string') {
+      info.path = path;
+      info.stack = slice.call(arguments, 1); // 从第二个参数开始, 转换为数组, 存入stack
+    }
+  }
+
+  use() {
+    const info = this.register.apply(this, arguments);
+    this.routes.all.push(info)
+  }
+
+  handle(req, res, stack) {
+    const next = () => {
+      // 拿到第一个匹配的中间件 // 创建n个next 
+      const middlerware = stack.shift();
+      if (middlerware) {
+        middlerware(req, res, next)
+      }
+    }
+    next();
+  }
+
+  callback() {
+    return (req, res) => {
+
+        res.json = (data) => { // 定义res.json
+          res.setHeader('Content-type', 'application-json');
+          res.end(
+            JSON.stringify(data);
+          )
+        }
+
+        const url = req.url;
+        const method = req.method;
+        const resultList = this.match(method, url);
+        this.handle(req, res, resultList)
+    }
+  }
+}
+
+===== morgan 
+var logger = require('morgan');
+app.use(logger('dev')); // 日志
+
+morgan支持stream配置项，可以通过它来实现将日志落地的效果
+
+参考 https://www.cnblogs.com/chyingp/p/node-learning-guide-express-morgan.html
+
+logger('dev') 
+定义 log 的 format 
+匹配的是 日志输出的格式 
+
+假设将日志写入文件, 则需要给logger 匹配项传入 stream 
+
+https://www.cnblogs.com/chyingp/p/nodejs-learning-express-session.html
+express + session 简易身份验证
+
+session:
+之前的 session 怎么搞的?
+首次进入 检查cookie中有没有userId 
+如果cookie无 userId 
+  needSetCookie = true 
+  set(userId, {})
+
+
+get(req.sessionId).then(() => {
+  blabla 
+  req.session = blabla {username , password}
+})
+
+当调用 user/login 后 redis set(req.sessionID, req.session)
+
+checkLogin 用的是 req.session.username
+
+https://xz.aliyun.com/t/4676
+session-file-store 做的是什么? 
+为 express session的文件存储了一个更加快捷的接口。 当没有为session合理的配置密钥或者在session的配置文件泄漏时可能导致 session 伪造
+
+在这里用的 
+session({
+  name: identityKey,
+  secret: 'chyingp', // 用来对session id相关的cookie签名
+  store: new FileStore(), // 本地存储session（文本文件，也可以选择其他store，比如redis的）
+  saveUninitialized: false, // 是否自动保存未初始化的会话，建议false
+  resave: false,  // 是否每次都重新保存会话，建议false
+  cookie: {
+    maxAge: 10 * 1000  // 有效期，单位是毫秒
+  }
+}}
+
+test 登陆/登出接口 login logout 
+
+登陆态判断 
+用户访问 http://127.0.0.1:3000 时，判断用户是否登录，如果是，则调到用户详情界面（简陋无比）；如果没有登录，则跳到登录界面；
+
+req.session.username 来判断当前是否是登陆状态 
+
+在登陆时, users/login 接口, 可以很清晰的看到侧边栏sessions文件变多...
+tmd.... 为什么 test-login 就没登陆状态了... 因为cookie设置的过期时间太短了... mmp 
+
