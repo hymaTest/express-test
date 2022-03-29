@@ -1,12 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var users = require('../users').items;
-
-var findUser = function(name, password){
-  return users.find(function(item){
-      return item.name === name && item.password === password;
-  });
-};
+const { login } = require('../controller/user');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -28,7 +23,7 @@ router.get('/test-login', function(req, res, next) {
   } else {
     res.json({
       errno: -1,
-      data: session
+      data: '当前未登陆状态'
     })
   }
 })
@@ -36,19 +31,17 @@ router.get('/test-login', function(req, res, next) {
 router.post('/login', function(req, res, next) {
   // 注意: 登陆后检查 postman 的 cookies
   var session = req.session;
-  var user = findUser(req.body.name, req.body.password);
-  if (user) {
-    // 通过req.session.regenerate 创建 session
-    req.session.regenerate(function(err) {
-      if (err) {
-        return res.json('登陆失败');
-      }
-      req.session.username = user.name;
-      res.json({ret_code: 0, ret_msg: `登陆成功${req.session.username}`}); 
-    })
-  } else {
-    res.json({ret_code: 1, ret_msg: '账号或密码错误'});
-  } 
+  var result = login(req, res);
+  console.log('---login data', req.body.username, req.body.password, req.session)
+  return result.then(data => {
+    if (data.username) {
+      req.session.username = data.username;
+      req.session.realname = data.realname;
+      res.json({ret_code: 0, ret_msg: `登陆成功${req.session.username}${req.session.realname}`}); 
+    } else {
+      res.json({ret_code: 1, ret_msg: '账号或密码错误'}); 
+    }
+  })
 });
 
 router.post('/logout', function(req, res, next) {
