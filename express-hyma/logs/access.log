@@ -60,3 +60,5 @@
 [0mGET /users/test-login [32m200 [0m5.434 ms - 122[0m
 [0mGET /users/test-login [32m200 [0m22.153 ms - 43[0m
 [0mPOST /users/login [32m200 [0m16.850 ms - 52[0m
+[0mPOST /users/login [32m200 [0m220.849 ms - 36[0m
+[0mPOST /users/login [32m200 [0m35.060 ms - 46[0m

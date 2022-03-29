@@ -1,4 +1,5 @@
 var express = require('express');
+const {SuccessModel, ErrorModel} = require('../model/resModel.js')
 var router = express.Router();
 var users = require('../users').items;
 const { login } = require('../controller/user');
@@ -37,9 +38,10 @@ router.post('/login', function(req, res, next) {
     if (data.username) {
       req.session.username = data.username;
       req.session.realname = data.realname;
-      res.json({ret_code: 0, ret_msg: `登陆成功${req.session.username}${req.session.realname}`}); 
+      // res.json({ret_code: 0, ret_msg: `登陆成功${req.session.username}${req.session.realname}`}); 
+      res.json(new SuccessModel('登录成功'))
     } else {
-      res.json({ret_code: 1, ret_msg: '账号或密码错误'}); 
+      res.json(new ErrorModel('账号或密码错误')); 
     }
   })
 });

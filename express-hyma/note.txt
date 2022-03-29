@@ -139,3 +139,6 @@ done
 
 登陆 / 登出 done 
 next: 使用model模块 规范res.json 
+
+git默认对于文件名大小写不敏感, 如何让git识别文件名大小写变化 
+终端 git.config.core.ignorecase false
