@@ -135,3 +135,7 @@ tmd.... 为什么 test-login 就没登陆状态了... 因为cookie设置的过�
 ---接下来 mysql 模块植入
 1- 创建mysql配置文件 config > db.js 
 2- 加一个exec 执行函数
+done 
+
+登陆 / 登出 done 
+next: 使用model模块 规范res.json 

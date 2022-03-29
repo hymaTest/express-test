@@ -9,7 +9,6 @@ var session = require('express-session');
 var FileStore = require('session-file-store')(session);
 
 var accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs/access.log'), {flags: 'a'});
-var users = require('./users').items;
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
